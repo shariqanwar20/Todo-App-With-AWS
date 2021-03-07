@@ -1,12 +1,13 @@
 import React, { useContext } from "react";
-import { IdentityContext } from "../utilities/identity-context.js";
+import { IdentityContext } from "../utilities/identity-context";
 import { Navbar } from "../components/Navbar";
 import { Button } from "theme-ui";
 import { dark } from "@theme-ui/presets";
 import { Link } from "@reach/router";
+import config from "../utilities/config";
 
 export default function Home() {
-  const { user, identity } = useContext(IdentityContext);
+  const userData = useContext(IdentityContext);
   return (
     <div>
       <Navbar />
@@ -21,11 +22,11 @@ export default function Home() {
         >
           Organize it all with todoist
         </p>
-        {!user ? (
+        {!userData ? (
           <div style={{ textAlign: "center", marginTop: "50px" }}>
             <Button
               onClick={() => {
-                identity.open();
+                window.location.href = `${config.domainUrl}/login?client_id=${config.clientId}&response_type=code&scope=email+openid&redirect_uri=${config.loginRedirectUri}`
               }}
               sx={{
                 padding: "10px 30px",
@@ -39,7 +40,7 @@ export default function Home() {
           <div style={{ textAlign: "center", marginTop: "50px" }}>
             <Button
               as={Link}
-              to="/todo/"
+              to="todo/"
               sx={{
                 padding: "10px 30px",
                 backgroundColor: dark.colors.secondary,
@@ -50,7 +51,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      {console.log(user)}
+      {console.log(userData)}
     </div>
   );
 }

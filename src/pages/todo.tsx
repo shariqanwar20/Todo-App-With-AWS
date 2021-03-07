@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Container,
   Button,
@@ -23,6 +23,7 @@ import { Link, navigate } from "gatsby";
 import Home from "./index";
 import { Navbar } from "../components/Navbar";
 import { Router, RouteComponentProps } from "@reach/router";
+import { IdentityContext } from "../utilities/identity-context";
 
 const GET_TODO = gql`
   query {
@@ -95,16 +96,6 @@ let Dashboard = () => {
       refetchQueries: [{ query: GET_TODO }],
     });
   };
-
-  // const [updateTodoCheckbox] = useMutation(UPDATE_TODO_CHECKBOX);
-  // const updateTodoCheckboxTask = (id) => {
-  //   updateTodoCheckbox({
-  //     variables: {
-  //       id: id,
-  //     },
-  //     refetchQueries: [{ query: GET_TODO }],
-  //   });
-  // };
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("*Enter Task Name"),
@@ -256,7 +247,11 @@ let Dashboard = () => {
 };
 
 export default () => {
+  const userData = useContext(IdentityContext)
   return (
-    <Dashboard />
+    <div>
+      {userData === null? (<Home />) : <Dashboard />}
+    </div>
+    // <Dashboard />
   )
 };

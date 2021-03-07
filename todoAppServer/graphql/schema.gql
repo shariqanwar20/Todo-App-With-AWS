@@ -7,7 +7,7 @@ type Todo {
 input TodoInput {
   id: ID!
   title: String!
-  done: Boolean!
+  done: Boolean
 }
 
 type Query {
