@@ -84,6 +84,14 @@ export class TodoAppServerStack extends cdk.Stack {
         type: ddb.AttributeType.STRING,
       },
     });
+
+    todoTable.addGlobalSecondaryIndex({
+      indexName: 'userToken',
+      partitionKey: {
+        name: 'userToken',
+        type: ddb.AttributeType.STRING
+      }
+    })
     todoTable.grantFullAccess(todoLambdaFn);
     todoLambdaFn.addEnvironment("TABLE_NAME", todoTable.tableName);
 
@@ -91,15 +99,21 @@ export class TodoAppServerStack extends cdk.Stack {
       "LambdaDataSource",
       todoLambdaFn
     );
+    const dynamodbDataSource = todoApi.addDynamoDbDataSource("DynamoDataSource", todoTable)
 
     lambdaDataSource.createResolver({
       typeName: "Query",
       fieldName: "getTodos",
     });
 
-    lambdaDataSource.createResolver({
+    dynamodbDataSource.createResolver({
       typeName: "Mutation",
       fieldName: "addTodo",
+      requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
+        appsync.PrimaryKey.partition('id').auto(),        ///Create an autoID for your primary Key Id
+        appsync.Values.projecting()                       ///Add Remaining input values
+      ),
+      responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem()
     });
 
     lambdaDataSource.createResolver({

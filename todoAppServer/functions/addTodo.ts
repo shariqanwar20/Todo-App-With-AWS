@@ -3,13 +3,14 @@ import { randomBytes } from "crypto";
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-export const addTodo = async (title: string) => {
+export const addTodo = async (todo: any) => {
   const params = {
     TableName: process.env.TABLE_NAME!,
     Item: {
       id: randomBytes(32).toString('hex'),
-      title,
+      title: todo.title,
       done: false,
+      userToken: todo.userToken
     },
   };
 

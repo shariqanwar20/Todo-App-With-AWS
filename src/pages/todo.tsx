@@ -26,8 +26,8 @@ import { Router, RouteComponentProps } from "@reach/router";
 import { IdentityContext } from "../utilities/identity-context";
 
 const GET_TODO = gql`
-  query {
-    getTodos {
+  query($userToken: String!) {
+    getTodos(token: $userToken) {
       id
       title
       done
@@ -36,8 +36,8 @@ const GET_TODO = gql`
 `;
 
 const ADD_TODO = gql`
-  mutation($title: String!) {
-    addTodo(title: $title) {
+  mutation($title: String!, $userToken: String!, $done: Boolean!) {
+    addTodo(title: $title, userToken: $userToken, done: $done) {
       id
       title
       done
@@ -56,20 +56,36 @@ const UPDATE_TODO = gql`
 `;
 
 const DELETE_TODO = gql`
-mutation ($id: String!) {
-  deleteTodo(id: $id)
-}
+  mutation($id: String!) {
+    deleteTodo(id: $id)
+  }
 `;
 
 let Dashboard = () => {
-  const { loading, error, data } = useQuery(GET_TODO);
+  const userData = useContext(IdentityContext);
+  console.log(userData.user?.username);
+
+  const { loading, error, data } = useQuery(GET_TODO, {
+    variables: {
+      userToken: `${userData.user?.username}`,
+    },
+  });
   const [addTodo] = useMutation(ADD_TODO);
   const addTask = (title: string) => {
     addTodo({
       variables: {
         title,
+        userToken: `${userData.user?.username}`,
+        done: false,
       },
-      refetchQueries: [{ query: GET_TODO }],
+      refetchQueries: [
+        {
+          query: GET_TODO,
+          variables: {
+            userToken: `${userData.user?.username}`,
+          },
+        },
+      ],
     });
   };
 
@@ -81,9 +97,16 @@ let Dashboard = () => {
           id,
           title,
           done,
-        }
+        },
       },
-      refetchQueries: [{ query: GET_TODO }],
+      refetchQueries: [
+        {
+          query: GET_TODO,
+          variables: {
+            userToken: `${userData.userToken}`,
+          },
+        },
+      ],
     });
   };
 
@@ -93,7 +116,14 @@ let Dashboard = () => {
       variables: {
         id: id,
       },
-      refetchQueries: [{ query: GET_TODO }],
+      refetchQueries: [
+        {
+          query: GET_TODO,
+          variables: {
+            userToken: `${userData.user?.username}`,
+          },
+        },
+      ],
     });
   };
 
@@ -119,7 +149,7 @@ let Dashboard = () => {
     }
   };
 
-  if (error) return <div>Error...</div>;
+  if (error) return <div>{`Error ${JSON.stringify(error)}`}</div>;
 
   return (
     <Container>
@@ -204,7 +234,7 @@ let Dashboard = () => {
                       <Checkbox
                         defaultChecked={task.done}
                         onChange={() => {
-                          updateTask(task.id, task.title, !task.done)
+                          updateTask(task.id, task.title, !task.done);
                         }}
                       />
                     </Label>
@@ -247,11 +277,9 @@ let Dashboard = () => {
 };
 
 export default () => {
-  const userData = useContext(IdentityContext)
+  const userData = useContext(IdentityContext);
   return (
-    <div>
-      {userData === null? (<Home />) : <Dashboard />}
-    </div>
+    <div>{userData === null ? <Home /> : <Dashboard />}</div>
     // <Dashboard />
-  )
+  );
 };

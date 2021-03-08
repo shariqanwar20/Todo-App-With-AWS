@@ -6,13 +6,6 @@ import logo from "../images/icon.png";
 import { IdentityContext, logout } from "../utilities/identity-context";
 
 export const Navbar = () => {
-  // const logout = () => {
-  //   console.log("LOGOUTTT");
-
-  //   window.location.href = `${config.domainUrl}/logout?client_id=${config.clientId}&logout_uri=${config.logoutUri}`;
-  //   sessionStorage.removeItem("access_token");
-  // };
-
   const userData = useContext(IdentityContext);
 
   return (
@@ -42,12 +35,12 @@ export const Navbar = () => {
           p={2}
           sx={{ padding: "8px", backgroundColor: "transparent" }}
           onClick={() => {
-            !userData
+            !userData.userToken
               ? (window.location.href = `${config.domainUrl}/login?client_id=${config.clientId}&response_type=code&scope=email+openid&redirect_uri=${config.loginRedirectUri}`)
               : logout();
           }}
         >
-          {userData ? "Logout" : "Login/Signup"}
+          {userData.userToken ? "Logout" : "Login/Signup"}
         </NavLink>
       </div>
     </Flex>

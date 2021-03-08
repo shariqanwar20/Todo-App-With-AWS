@@ -4,18 +4,28 @@ type Todo {
   done: Boolean!
 }
 
+type AddTodo {
+  title: String!
+  userToken: String!
+}
+
 input TodoInput {
   id: ID!
   title: String!
   done: Boolean
 }
 
+input AddTodoInput {
+  title: String!
+  userToken: String!
+}
+
 type Query {
-  getTodos: [Todo]
+  getTodos(token: String): [Todo]
 }
 
 type Mutation {
-  addTodo(title: String): Todo
+  addTodo(title: String!, done: Boolean!, userToken: String!): Todo
   deleteTodo(id: String): String
   updateTodo(todo: TodoInput): Todo
 }

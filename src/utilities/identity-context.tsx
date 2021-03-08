@@ -52,7 +52,7 @@ export const IdentityProvider = ({ children }) => {
       });
   }
 
-  function fetchUserDetails(accessToken: string) {
+  function fetchUserDetails(accessToken: string) {    
     const requestOptions = {
       method: "POST",
       headers: {
@@ -71,6 +71,9 @@ export const IdentityProvider = ({ children }) => {
   }
 
   return (
-    <IdentityContext.Provider value={user}>{children}</IdentityContext.Provider>
+    <IdentityContext.Provider value={{
+      user,
+      userToken: sessionStorage.getItem("access_token")
+    }}>{children}</IdentityContext.Provider>
   );
 };

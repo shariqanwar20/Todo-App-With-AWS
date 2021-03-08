@@ -22,7 +22,7 @@ export default function Home() {
         >
           Organize it all with todoist
         </p>
-        {!userData ? (
+        {true === true ? (
           <div style={{ textAlign: "center", marginTop: "50px" }}>
             <Button
               onClick={() => {

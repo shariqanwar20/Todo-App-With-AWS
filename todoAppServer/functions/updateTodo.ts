@@ -27,7 +27,7 @@ export const updateTodo = async (todo: any) => {
   let attributes = Object.keys(todo);
   for (let i = 0; i < attributes.length; i++) {
     let attribute = attributes[i];
-    if (attribute !== "id") {
+    if (attribute !== "id" && attribute !== "userToken") {
       params["UpdateExpression"] +=
         prefix + "#" + attribute + " = :" + attribute;
       params["ExpressionAttributeValues"][":" + attribute] = todo[attribute];

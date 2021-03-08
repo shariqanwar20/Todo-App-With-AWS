@@ -2,9 +2,16 @@ import * as AWS from "aws-sdk";
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-export const getTodo = async () => {
+export const getTodo = async (token: string) => {
   const params = {
     TableName: process.env.TABLE_NAME!,
+    FilterExpression: "#userToken = :token",
+    ExpressionAttributeNames: {
+        "#userToken": "userToken",
+    },
+    ExpressionAttributeValues: { 
+        ":token": `${token}` 
+    }
   };
 
   try {
